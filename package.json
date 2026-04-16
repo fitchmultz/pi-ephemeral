@@ -1,14 +1,57 @@
 {
   "name": "pi-ephemeral",
   "version": "0.1.0",
-  "description": "Temporary unsaved conversations with pi. Save later if you change your mind.",
-  "keywords": ["pi-package"],
-  "main": "src/index.ts",
+  "description": "Pi extension for temporary unsaved conversations. Toggle ephemeral mode on/off, session is deleted on exit.",
+  "type": "module",
+  "author": "Mitch Fultz (https://github.com/fitchmultz)",
+  "license": "MIT",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-extension",
+    "extension",
+    "ephemeral",
+    "temporary",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fitchmultz/pi-ephemeral.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fitchmultz/pi-ephemeral/issues"
+  },
+  "homepage": "https://github.com/fitchmultz/pi-ephemeral#readme",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "pi": {
-    "extensions": ["./src/index.ts"]
+    "extensions": [
+      "./src/index.ts"
+    ]
   },
   "peerDependencies": {
-    "@mariozechner/pi-coding-agent": "*",
-    "@mariozechner/pi-tui": "*"
-  }
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.67.4",
+    "typescript": "^6.0.2"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "pack:check": "npm pack --dry-run",
+    "ci": "npm run typecheck",
+    "validate": "npm run ci && npm run pack:check",
+    "prepublishOnly": "npm run validate"
+  },
+  "packageManager": "npm@10.9.8"
 }
