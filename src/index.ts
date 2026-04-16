@@ -12,7 +12,7 @@
  * - Warn before navigating away from unsaved ephemeral sessions
  *
  * Usage:
- *   pi --ephemeral          Start a fresh ephemeral session
+ *   pi --ephemeral          Start a fresh ephemeral session (CLI flag)
  *   /ephemeral              Toggle ephemeral on/off
  *   /ephemeral on           Enable ephemeral (no-op if already on)
  *   /ephemeral off          Disable ephemeral (no-op if already off)
@@ -80,7 +80,7 @@ export default function ephemeralExtension(pi: ExtensionAPI) {
 
 	pi.on("session_start", async (_event, ctx) => {
 		// Check CLI flag first
-		const flag = pi.getFlag("--ephemeral");
+		const flag = pi.getFlag("ephemeral");
 		if (flag) {
 			isEphemeral = true;
 		} else {
