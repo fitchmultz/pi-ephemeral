@@ -4,8 +4,9 @@ Pi extension for ephemeral (temporary, unsaved) conversations.
 
 ## Commands
 
-- `/ephemeral` — Mark current session as ephemeral (deleted on exit)
-- `/save` — Convert ephemeral session to permanent
+- `/ephemeral` — Toggle ephemeral mode
+- `/ephemeral on` — Enable ephemeral
+- `/ephemeral off` — Disable ephemeral
 
 ## Flags
 

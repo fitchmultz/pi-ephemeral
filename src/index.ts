@@ -2,24 +2,25 @@
  * pi-ephemeral — Temporary unsaved conversations with pi.
  *
  * Purpose: Allow users to have throwaway conversations that are automatically
- * cleaned up on exit, with a seamless escape hatch to persist them later.
+ * cleaned up on exit, with a seamless toggle to persist them later.
  *
  * Responsibilities:
  * - Track ephemeral state per session
  * - Delete session file on shutdown when ephemeral
- * - Provide /ephemeral and /save commands
- * - Show visual indicator in status bar
+ * - Provide /ephemeral toggle command
+ * - Show visual indicator in status bar when enabled (hidden when disabled)
  * - Warn before navigating away from unsaved ephemeral sessions
  *
  * Usage:
  *   pi --ephemeral          Start a fresh ephemeral session
- *   /ephemeral              Mark current session as ephemeral
- *   /save [name]            Convert ephemeral session to permanent
+ *   /ephemeral              Toggle ephemeral on/off
+ *   /ephemeral on           Enable ephemeral (no-op if already on)
+ *   /ephemeral off          Disable ephemeral (no-op if already off)
  *
  * Invariants:
  * - Ephemeral state is stored as a custom entry so it survives /reload
  * - Session file is only deleted on clean shutdown (crashes leave it for recovery)
- * - /save is idempotent on non-ephemeral sessions (just names them)
+ * - Status bar indicator only visible when ephemeral is enabled
  */
 
 import type { ExtensionAPI, ExtensionContext, SessionBeforeSwitchEvent } from "@mariozechner/pi-coding-agent";
@@ -52,6 +53,12 @@ export default function ephemeralExtension(pi: ExtensionAPI) {
 		}
 	}
 
+	function setEphemeral(value: boolean, ctx: ExtensionContext) {
+		isEphemeral = value;
+		pi.appendEntry(CUSTOM_TYPE, { ephemeral: value });
+		updateStatus(ctx);
+	}
+
 	/**
 	 * Scan session entries for the most recent ephemeral marker.
 	 * The last marker wins — if it says ephemeral=false, the session is permanent.
@@ -82,10 +89,9 @@ export default function ephemeralExtension(pi: ExtensionAPI) {
 		}
 
 		if (isEphemeral) {
-			// Ensure the marker is present (in case it was set by flag)
 			pi.appendEntry(CUSTOM_TYPE, { ephemeral: true });
-			updateStatus(ctx);
 		}
+		updateStatus(ctx);
 	});
 
 	pi.on("session_shutdown", async (_event, ctx) => {
@@ -121,51 +127,37 @@ export default function ephemeralExtension(pi: ExtensionAPI) {
 	});
 
 	// ---------------------------------------------------------------------------
-	// Commands
+	// Command
 	// ---------------------------------------------------------------------------
 
 	pi.registerCommand("ephemeral", {
-		description: "Mark current session as ephemeral (deleted on exit)",
-		handler: async (_args, ctx) => {
-			if (isEphemeral) {
-				ctx.ui.notify("Already ephemeral", "info");
-				return;
-			}
-
-			isEphemeral = true;
-			pi.appendEntry(CUSTOM_TYPE, { ephemeral: true });
-			updateStatus(ctx);
-			ctx.ui.notify("Session is now ephemeral — it will be deleted on exit", "info");
-		},
-	});
-
-	pi.registerCommand("save", {
-		description: "Save ephemeral session (convert to permanent, optionally name it)",
+		description: "Toggle ephemeral mode (deleted on exit). Use: /ephemeral, /ephemeral on, /ephemeral off",
 		handler: async (args, ctx) => {
-			if (!isEphemeral) {
-				// Idempotent: just name it if they pass a name
-				const name = args?.trim();
-				if (name) {
-					pi.setSessionName(name);
-					ctx.ui.notify(`Session named: ${name}`, "info");
-				} else {
-					ctx.ui.notify("Session is already permanent", "info");
+			const subcommand = args?.trim().toLowerCase();
+
+			if (subcommand === "on") {
+				if (isEphemeral) {
+					ctx.ui.notify("Already ephemeral", "info");
+					return;
 				}
-				return;
-			}
-
-			// Exit ephemeral mode
-			isEphemeral = false;
-			pi.appendEntry(CUSTOM_TYPE, { ephemeral: false });
-			updateStatus(ctx);
-
-			// Optionally name the session
-			const name = args?.trim();
-			if (name) {
-				pi.setSessionName(name);
-				ctx.ui.notify(`Session saved as "${name}"`, "info");
+				setEphemeral(true, ctx);
+				ctx.ui.notify("Session is now ephemeral — it will be deleted on exit", "info");
+			} else if (subcommand === "off") {
+				if (!isEphemeral) {
+					ctx.ui.notify("Ephemeral is not enabled", "info");
+					return;
+				}
+				setEphemeral(false, ctx);
+				ctx.ui.notify("Ephemeral disabled — session will be kept", "info");
 			} else {
-				ctx.ui.notify("Session saved!", "info");
+				// Toggle
+				setEphemeral(!isEphemeral, ctx);
+				ctx.ui.notify(
+					isEphemeral
+						? "Session is now ephemeral — it will be deleted on exit"
+						: "Ephemeral disabled — session will be kept",
+					"info",
+				);
 			}
 		},
 	});
