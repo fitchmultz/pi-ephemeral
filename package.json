@@ -1,0 +1,14 @@
+{
+  "name": "pi-ephemeral",
+  "version": "0.1.0",
+  "description": "Temporary unsaved conversations with pi. Save later if you change your mind.",
+  "keywords": ["pi-package"],
+  "main": "src/index.ts",
+  "pi": {
+    "extensions": ["./src/index.ts"]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-tui": "*"
+  }
+}
