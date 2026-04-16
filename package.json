@@ -39,9 +39,6 @@
       "./src/index.ts"
     ]
   },
-  "peerDependencies": {
-    "@mariozechner/pi-coding-agent": "*"
-  },
   "devDependencies": {
     "@mariozechner/pi-coding-agent": "^0.67.4",
     "typescript": "^6.0.2"
