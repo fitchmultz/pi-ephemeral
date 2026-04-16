@@ -1,5 +1,5 @@
 {
-  "name": "pi-ephemeral",
+  "name": "@fitchmultz/pi-ephemeral",
   "version": "0.1.0",
   "description": "Pi extension for temporary unsaved conversations. Toggle ephemeral mode on/off, session is deleted on exit.",
   "type": "module",

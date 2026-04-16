@@ -7,9 +7,9 @@ When you want a quick throwaway conversation — testing an idea, asking a quest
 ## Install
 
 ```bash
-pi install git:github.com/mitchfultz/pi-ephemeral
+pi install npm:@fitchmultz/pi-ephemeral
 # or
-pi install npm:pi-ephemeral
+pi install https://github.com/fitchmultz/pi-ephemeral
 ```
 
 ## Usage
