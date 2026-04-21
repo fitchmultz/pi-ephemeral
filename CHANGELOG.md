@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2026-04-21
+
+### Changed
+- updated the local pi development baseline to `@mariozechner/pi-coding-agent` `0.68.0`
+- regenerated the npm lockfile against the current stable dependency graph
+- reviewed the pi `0.68.0` changelog and confirmed the extension does not depend on removed cwd-bound tool exports or implicit cwd helper fallbacks
+
 ## [0.1.3] - 2026-04-18
 
 ### Changed
